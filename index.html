@@ -60,6 +60,15 @@
       margin-bottom: 2rem;
       border-left: 5px solid #2E8B57;
     }
+    .success-message {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      border-radius: 5px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -106,12 +115,14 @@
       <button type="button" onclick="calculateMAO()">Calculate MAO</button>
 
       <div class="result" id="result"></div>
+      <div class="success-message" id="success">✅ Your deal was saved successfully!</div>
     </form>
   </div>
 
   <script>
     const leadForm = document.getElementById('lead-form');
     const calcForm = document.getElementById('calc-form');
+    const successMsg = document.getElementById('success');
 
     leadForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -137,16 +148,23 @@
         name, email, arv, repairs, profit, assignment, closing, mao: mao.toFixed(2)
       };
 
-      const response = await fetch('https://script.google.com/macros/s/AKfycby7GZI6bNcGNLoqf8e_Z1ZDLlGTBx_TFn-8Uuf8PQFQxLin34iD0Q_0zjRgX6mLoLQ/exec', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycby7GZI6bNcGNLoqf8e_Z1ZDLlGTBx_TFn-8Uuf8PQFQxLin34iD0Q_0zjRgX6mLoLQ/exec', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-      const result = await response.json();
-      console.log(result);
+        const result = await response.json();
+        console.log(result);
+        if (result.result === 'success') {
+          successMsg.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error sending data to Google Sheets:', error);
+      }
     }
   </script>
 </body>
